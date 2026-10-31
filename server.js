@@ -8,12 +8,10 @@ app.use(cors());
 let activeServers = {};
 const API_KEY = "SECRET_EGG_KEY_123";
 
-// Home route
 app.get('/', (req, res) => {
     res.send("Egg Scanner Backend is Live!");
 });
 
-// Endpoint for Scraper (POST)
 app.post('/api/report-egg', (req, res) => {
     const { apiKey, jobId, placeId, eggType, rarity, biome } = req.body;
 
@@ -25,6 +23,7 @@ app.post('/api/report-egg', (req, res) => {
         return res.status(400).json({ error: "Missing data" });
     }
 
+    // Keep data fresh
     activeServers[jobId] = {
         jobId,
         placeId,
@@ -34,14 +33,12 @@ app.post('/api/report-egg', (req, res) => {
         updatedAt: Date.now()
     };
 
-    console.log(`[+] Reported: ${rarity} ${eggType}`);
     return res.status(200).json({ success: true });
 });
 
-// Endpoint for Main UI (GET)
 app.get('/api/get-servers', (req, res) => {
     const now = Date.now();
-    const EXPIRE_TIME_MS = 5 * 60 * 1000;
+    const EXPIRE_TIME_MS = 2 * 60 * 1000; // Purge servers older than 2 minutes
 
     for (const jobId in activeServers) {
         if (now - activeServers[jobId].updatedAt > EXPIRE_TIME_MS) {
@@ -53,6 +50,4 @@ app.get('/api/get-servers', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
