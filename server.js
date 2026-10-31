@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/report-egg', (req, res) => {
-    const { apiKey, jobId, placeId, eggType, rarity, biome, incomeRate } = req.body;
+    const { apiKey, jobId, placeId, eggType, rarity, incomeRate, multiplier } = req.body;
 
     if (apiKey !== API_KEY) {
         return res.status(403).json({ error: "Unauthorized" });
@@ -28,8 +28,8 @@ app.post('/api/report-egg', (req, res) => {
         placeId,
         eggType,
         rarity: rarity || "Rare",
-        biome: biome || "Main World",
-        incomeRate: incomeRate || "N/A",
+        incomeRate: incomeRate || "$0/s",
+        multiplier: multiplier || "x1.00",
         updatedAt: Date.now()
     };
 
@@ -38,7 +38,7 @@ app.post('/api/report-egg', (req, res) => {
 
 app.get('/api/get-servers', (req, res) => {
     const now = Date.now();
-    const EXPIRE_TIME_MS = 2 * 60 * 1000; // 2 minutes TTL
+    const EXPIRE_TIME_MS = 2 * 60 * 1000;
 
     for (const jobId in activeServers) {
         if (now - activeServers[jobId].updatedAt > EXPIRE_TIME_MS) {
