@@ -8,12 +8,12 @@ app.use(cors());
 let activeServers = {};
 const API_KEY = "SECRET_EGG_KEY_123";
 
-// Root test endpoint to check health
+// Home route
 app.get('/', (req, res) => {
     res.send("Egg Scanner Backend is Live!");
 });
 
-// 1. Endpoint for Scrapers (POST)
+// Endpoint for Scraper (POST)
 app.post('/api/report-egg', (req, res) => {
     const { apiKey, jobId, placeId, eggType, rarity, biome } = req.body;
 
@@ -38,7 +38,7 @@ app.post('/api/report-egg', (req, res) => {
     return res.status(200).json({ success: true });
 });
 
-// 2. Endpoint for Main UI (GET)
+// Endpoint for Main UI (GET)
 app.get('/api/get-servers', (req, res) => {
     const now = Date.now();
     const EXPIRE_TIME_MS = 5 * 60 * 1000;
