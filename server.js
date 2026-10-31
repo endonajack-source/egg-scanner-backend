@@ -2,14 +2,14 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
+app.use(cors({ origin: '*' }));
 app.use(express.json());
-app.use(cors());
 
 let activeServers = {};
 const API_KEY = "SECRET_EGG_KEY_123";
 
 app.get('/', (req, res) => {
-    res.send("Egg Scanner Backend is Live!");
+    res.send("Backend active!");
 });
 
 app.post('/api/report-egg', (req, res) => {
@@ -20,29 +20,30 @@ app.post('/api/report-egg', (req, res) => {
     }
 
     if (!jobId || !eggType) {
-        return res.status(400).json({ error: "Missing data" });
+        return res.status(400).json({ error: "Invalid payload" });
     }
 
     activeServers[jobId] = {
         jobId,
         placeId,
         eggType,
-        rarity: rarity || "Rare",
-        incomeRate: incomeRate || "$0/s",
-        multiplier: multiplier || "x1.00",
+        rarity: rarity || "Secret",
+        incomeRate: incomeRate || "$1B/s",
+        multiplier: multiplier || "x10.00",
         updatedAt: Date.now()
     };
 
+    console.log(`[+] Server added: ${eggType} (${jobId})`);
     return res.status(200).json({ success: true });
 });
 
 app.get('/api/get-servers', (req, res) => {
     const now = Date.now();
-    const EXPIRE_TIME_MS = 2 * 60 * 1000;
+    const EXPIRE_MS = 2 * 60 * 1000; // 2 minutes
 
-    for (const jobId in activeServers) {
-        if (now - activeServers[jobId].updatedAt > EXPIRE_TIME_MS) {
-            delete activeServers[jobId];
+    for (const id in activeServers) {
+        if (now - activeServers[id].updatedAt > EXPIRE_MS) {
+            delete activeServers[id];
         }
     }
 
@@ -50,4 +51,4 @@ app.get('/api/get-servers', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Listening on ${PORT}`));
